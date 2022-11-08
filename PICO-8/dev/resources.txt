@@ -1,4 +1,0 @@
-RESOURCES
-
-https://www.lexaloffle.com/pico-8.php
-https://nerdyteachers.com/PICO-8/

@@ -7,7 +7,7 @@ function _init()
   player={
     sp=0,
     x=2,
-    y=14,
+    y=12*8,
     w=8,
     h=8,
     flp=false,
@@ -35,10 +35,13 @@ function _init()
   
   goomba={
    sp=3,
-   x=21,
+   x=10,
    y=12,
-   flp=false,
-   anim=0
+   w=8,
+   h=8,
+   flp=true,
+   anim=0,
+   move_right=true
   }
 
   red_mush={
@@ -75,6 +78,7 @@ function _update()
   player_update()
   player_animate()
   coin_animate()
+  goomba_update()
   goomba_animate()
 
   --simple camera
@@ -320,6 +324,22 @@ function goomba_animate()
   end
   if goomba.sp>6 then
    goomba.sp=3
+  end
+ end
+end
+
+function goomba_update()
+ if goomba.move_right then
+  goomba.flp=false
+  goomba.x+=.5/8
+  if collide_map(goomba,"left",1) then
+    goomba.move_right=false
+  end
+ elseif not goomba.move_right then
+  goomba.flp=true
+  goomba.x-=.5/8
+  if collide_map(goomba,"right",1) then
+    goomba.move_right=true
   end
  end
 end

@@ -7,7 +7,7 @@ function _init()
   player={
     sp=0,
     x=2,
-    y=96,
+    y=90,
     w=8,
     h=8,
     sp_w=1,
@@ -17,8 +17,8 @@ function _init()
     dy=0,
     max_dx=1.85,
     max_dy=5,
-    acc=0.4,
-    boost=5.2,
+    acc=0.43,
+    boost=5.4,
     anim=0,
     running=false,
     jumping=false,
@@ -70,6 +70,8 @@ function _init()
   --simple camera
   cam_x=0
 
+  ------test------
+  x1r=0 y1r=0 x2r=0 y2r=0
   --map limits
   map_start=0
   map_end=1024
@@ -109,6 +111,9 @@ function _draw()
   outline_sprite(red_mush.sp,0,red_mush.x*8,red_mush.y*8-1,1,1,red_mush.flp)
   outline_sprite(green_mush.sp,0,green_mush.x*8,green_mush.y*8-1,1,1,green_mush.flp)
   outline_sprite(player.sp,0,player.x,player.y-1,1,player.sp_h,player.flp)
+
+  ------test------
+  --rect(x1r,y1r,x2r,y2r,7)
 end
 
 -->8
@@ -125,21 +130,25 @@ function collide_map(obj,aim,flag)
  local x2=0  local y2=0
 
  if aim=="left" then
-   x1=x-2  y1=y
-   x2=x    y2=y+h-1
+   x1=x-3    y1=y
+   x2=x-2    y2=y+h-1
 
  elseif aim=="right" then
-   x1=x+w        y1=y
-   x2=x+w+1  y2=y+h-1
+   x1=x+w+1  y1=y
+   x2=x+w+2  y2=y+h-1
 
  elseif aim=="up" then
-   x1=x+1    y1=y-1
-   x2=x+w-1  y2=y
+   x1=x+1    y1=y-3
+   x2=x+w-1  y2=y-3
 
  elseif aim=="down" then
    x1=x      y1=y+h
    x2=x+w    y2=y+h
  end
+
+ ------test------
+ x1r=x1 y1r=y1
+ x2r=x2 y2r=y2
 
  --pixels to tiles
  x1/=8    y1/=8
@@ -207,16 +216,10 @@ function player_update()
       player.dy=0
       player.y-=((player.y+player.h+1)%8)-1
     end
-    if collide_map(player,"down",7) then
-      sfx(coin.snd)
-    end
   elseif player.dy<0 then
     player.jumping=true
     if collide_map(player,"up",1) then
       player.dy=0
-    end
-    if collide_map(player,"up",7) then
-      sfx(coin.snd)
     end
   end
 

@@ -72,6 +72,11 @@ function _init()
 
   ------test------
   x1r=0 y1r=0 x2r=0 y2r=0
+  collide_l="no"
+  collide_r="no"
+  collide_u="no"
+  collide_d="no"
+  ----------------
   --map limits
   map_start=0
   map_end=1024
@@ -113,7 +118,11 @@ function _draw()
   outline_sprite(player.sp,0,player.x,player.y-1,1,player.sp_h,player.flp)
 
   ------test------
-  --rect(x1r,y1r,x2r,y2r,7)
+  rect(x1r,y1r,x2r,y2r,7)
+  print("⬅️= "..collide_l,player.x,player.y-10)
+  print("➡️= "..collide_r,player.x,player.y-16)
+  print("⬆️= "..collide_u,player.x,player.y-22)
+  print("⬇️= "..collide_d,player.x,player.y-28)  
 end
 
 -->8
@@ -131,19 +140,19 @@ function collide_map(obj,aim,flag)
 
  if aim=="left" then
    x1=x-3    y1=y
-   x2=x-2    y2=y+h-1
+   x2=x-3    y2=y+h
 
  elseif aim=="right" then
    x1=x+w+1  y1=y
-   x2=x+w+2  y2=y+h-1
+   x2=x+w+1  y2=y+h
 
  elseif aim=="up" then
    x1=x+1    y1=y-3
    x2=x+w-1  y2=y-3
 
  elseif aim=="down" then
-   x1=x      y1=y+h
-   x2=x+w    y2=y+h
+   x1=x+2      y1=y+h
+   x2=x+w-2    y2=y+h+1
  end
 
  ------test------
@@ -199,7 +208,7 @@ function player_update()
   and player.landed then
     player.dy-=player.boost
     player.landed=false
-    sfx(player.jump_snd)
+    --sfx(player.jump_snd)
   end
 
   --check collision up and down
@@ -215,11 +224,21 @@ function player_update()
       player.falling=false
       player.dy=0
       player.y-=((player.y+player.h+1)%8)-1
+
+      ------test------
+      collide_d="yes"
+      else collide_d="no"
+      ----------------
     end
   elseif player.dy<0 then
     player.jumping=true
     if collide_map(player,"up",1) then
       player.dy=0
+      
+      ------test------
+      collide_u="yes"
+      else collide_u="no"
+      ----------------
     end
   end
 
@@ -230,6 +249,11 @@ function player_update()
 
     if collide_map(player,"left",1) then
       player.dx=0
+
+      ------test------
+      collide_l="yes"
+      else collide_l="no"
+      ----------------
     end
     if collide_map(player,"left",7) then
       sfx(coin.snd)
@@ -240,6 +264,11 @@ function player_update()
 
     if collide_map(player,"right",1) then
       player.dx=0
+
+      ------test------
+      collide_r="yes"
+      else collide_r="no"
+      ----------------
     end
     if collide_map(player,"right",7) then
       sfx(coin.snd)
@@ -511,7 +540,7 @@ __map__
 0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a525353540a0a0a0a0a0a0a0a0a0a0a0a0a0a0a3232320a0a0a0a0a2d0a0a0a7d7e7f0a0a0a0a0a0a
 0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a323232320a0a0a0a0a3d0a0a0a6868680a0a0a0a0a0a
 0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a32323232320a0a0a0a0a3d0a0a48494a4b4c0a0a0a0a0a
-0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a3a0a0a0a313b313a310a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a3a0a0a0a0a0a0a0a0a0a0a0a0a0ab5b4b60a0a0a0a0a0a0a320a0a320a0a0a0a0a0a0a0a0a0a0a0a0a31313a310a0a0a0a0a0a0a0a0a0a0a0a0a0a0a3232323232320a0a0a0a0a3d0a0a58595a5b5c0a0a0a0a0a
+0a0a0a0a0a0a0a0a0a0a320a320a0a3a0a0a0a313b313a310a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a3a0a0a0a0a0a0a0a0a0a0a0a0a0ab5b4b60a0a0a0a0a0a0a320a0a320a0a0a0a0a0a0a0a0a0a0a0a0a31313a310a0a0a0a0a0a0a0a0a0a0a0a0a0a0a3232323232320a0a0a0a0a3d0a0a58595a5b5c0a0a0a0a0a
 0a60610a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a60610a0a0a0e0f0a0a0a0a0a0a0a0a0a0a0a0a0a0ab5b60a0a0ab7b3b80a60610a0a0a32320a0a32320a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a32323232323232610a0a0a0a3d0a0a68686868680a0a0a0a0a
 0a7071720a0a0a0a0a0a0a0a0a0a0a60610a0a0a0a0a0a0a0a0a0a0a0e0f0a0a7071720a0a1e1f0a0a0a0a0a0a0a0a0a0a0a0a0a0ab7b80a0a0ab7b3b80a7071720a3232320a0a3232320a0a60610a0e0f0a0a0a0a0a0a0a0a0a0a0a0a0a0a0e0f0a0a0a0a0a323232323232323271720a0a0a3d0a0a68696a6b6c0a60610a0a
 73747576770a320a0a0a626363640a7071720a0a0a0a0a65660a0a0a1e1f0a73747576770a2e2f0a0a6263640a0a0a0a0a0a0a0a0ab7b80a0a0ab7b3b870747576323232320a0a32323232647071721e1f0a0a0a65660a0a0a0a0a0a0a0a0a1e1f0a0a0a0a3232323232323232327576770a0a320a0a78797a7b7c0a7071720a

@@ -24,6 +24,7 @@ function _init()
     jumping=false,
     falling=false,
     landed=false,
+    collide_coin=0,
     jump_snd=1
   }
   
@@ -119,10 +120,10 @@ function _draw()
 
   ------test------
   rect(x1r,y1r,x2r,y2r,7)
-  print("⬅️= "..collide_l,player.x,player.y-10)
-  print("➡️= "..collide_r,player.x,player.y-16)
-  print("⬆️= "..collide_u,player.x,player.y-22)
-  print("⬇️= "..collide_d,player.x,player.y-28)  
+  print(player.collide_coin,player.x,player.y-16)
+  --print("➡️= "..collide_r,player.x,player.y-16)
+  --print("⬆️= "..collide_u,player.x,player.y-22)
+  --print("⬇️= "..collide_d,player.x,player.y-28)  
 end
 
 -->8
@@ -140,11 +141,11 @@ function collide_map(obj,aim,flag)
 
  if aim=="left" then
    x1=x-3    y1=y
-   x2=x-3    y2=y+h
+   x2=x-2    y2=y+h-1
 
  elseif aim=="right" then
    x1=x+w+1  y1=y
-   x2=x+w+1  y2=y+h
+   x2=x+w+2  y2=y+h-1
 
  elseif aim=="up" then
    x1=x+1    y1=y-3
@@ -171,7 +172,47 @@ function collide_map(obj,aim,flag)
  else
    return false
  end
+end
 
+function collide_spr(obj,aim,flag)
+ --obj = table needs x,y,w,h
+ --aim = left,right,up,down
+
+ local x=obj.x  local y=obj.y
+ local w=obj.w  local h=obj.h
+
+ local x1=0	 local y1=0
+ local x2=0  local y2=0
+
+ if aim=="left" then
+   x1=x-3    y1=y
+   x2=x-2    y2=y+h-1
+
+ elseif aim=="right" then
+   x1=x+w+1  y1=y
+   x2=x+w+2  y2=y+h-1
+
+ elseif aim=="up" then
+   x1=x+1    y1=y-3
+   x2=x+w-1  y2=y-3
+
+ elseif aim=="down" then
+   x1=x+2      y1=y+h
+   x2=x+w-2    y2=y+h+1
+ end
+
+ --pixels to tiles
+ x1/=8    y1/=8
+ x2/=8    y2/=8
+
+ if fget(sget(x1,y1), flag)
+ or fget(sget(x1,y2), flag)
+ or fget(sget(x2,y1), flag)
+ or fget(sget(x2,y2), flag) then
+   return true
+ else
+   return false
+ end
 end
 
 -->8
@@ -219,6 +260,11 @@ function player_update()
 
     player.dy=limit_speed(player.dy,player.max_dy)
 
+    if collide_spr(player,"down",7) then
+      player.collide_coin=1
+      sfx(coin.snd)
+    end
+
     if collide_map(player,"down",0) then
       player.landed=true
       player.falling=false
@@ -232,6 +278,12 @@ function player_update()
     end
   elseif player.dy<0 then
     player.jumping=true
+
+    if collide_spr(player,"up",7) then
+      player.collide_coin=1
+      sfx(coin.snd)
+    end
+
     if collide_map(player,"up",1) then
       player.dy=0
       
@@ -247,6 +299,10 @@ function player_update()
 
     player.dx=limit_speed(player.dx,player.max_dx)
 
+    if collide_spr(player,"left",7) then
+      player.collide_coin=1
+      sfx(coin.snd)
+    end
     if collide_map(player,"left",1) then
       player.dx=0
 
@@ -262,6 +318,11 @@ function player_update()
 
     player.dx=limit_speed(player.dx,player.max_dx)
 
+    if collide_spr(player,"right",7) then
+      player.collide_coin=1
+      sfx(coin.snd)
+    end
+
     if collide_map(player,"right",1) then
       player.dx=0
 
@@ -269,9 +330,6 @@ function player_update()
       collide_r="yes"
       else collide_r="no"
       ----------------
-    end
-    if collide_map(player,"right",7) then
-      sfx(coin.snd)
     end
   end
 

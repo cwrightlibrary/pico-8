@@ -1,0 +1,342 @@
+<!doctype html>
+<html>
+<head>
+  <link rel='stylesheet'
+        href='https://fonts.googleapis.com/css2?family=Work+Sans'>
+  <style>
+    html {
+      font-family: Work Sans, system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+      font-size: .8em;
+    }
+    h2 {
+      text-align: center;
+    }
+    tr {
+      border-color: white;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      table-layout: fixed;
+      border: 1px solid white;
+    }
+    th {
+      font-size: 1.2em;
+      border: 1px solid white;
+      text-align: left;
+      padding: 2px;
+    }
+    td {
+      border: 1px solid white;
+      text-align: left;
+      padding: 6px;
+    }
+    .information, .mainHead {
+      text-align: center;
+      vertical-align: top;
+      background-color: #3474AE;
+      color: white;
+    }
+    .mainHead {
+      font-size: 1.6em;
+    }
+    .workroom, .frontDesk, .compDesk, .staffTime {
+      color: white;
+    }
+    .workroom {
+      background-color: #05444d;
+    }
+    .frontDesk {
+      background-color: #05444d;
+    }
+    .compDesk {
+      background-color: #05444d;
+    }
+    .staffTime {
+      background-color: #05444d;
+    }
+    .locations {
+      background-color: #C4E3FF;
+    }
+    .eleven {
+      background-color: #C0FFE8;
+    }
+    .two {
+      background-color: #FFD5D5;
+    }
+    .six {
+      background-color: #FFDDF6;
+    }
+    input {
+      border:0;
+      background-color:#c4f8ff
+    }
+    textarea {
+      border:0;
+      background-color: #c4f8ff;
+      resize: none;
+      padding: 0;
+      margin:0;
+      vertical-align: bottom;
+    }
+    #leaveFirstHour, #leaveSecondHour, #meetingsFirstHour, #meetingsSecondHour, #programFirstHour, #programSecondHour {
+      width: 10%;
+      text-align: center;
+    }
+    #leaveInitials, #meetingsInitials {
+      width: 50%;
+      text-transform:uppercase;
+    }
+    #loggedLeave, #loggedMeetings, #loggedProgram {
+      height: 100%;
+    }
+    button {
+      background-color:#3496ae;
+      border:0; 
+      color:white;
+      padding:0;
+      margin:0;
+    }
+    button:hover {
+      background-color: #c4fbff;
+      color:black;
+    }
+    button:active {
+      background-color: #80c0c4;
+    }
+    table.invisible {
+      visibility: hidden;
+    }
+    table, th, td {
+      border: 1px solid #eaeaea;
+    }
+    body {
+      background-color: #202124;
+      color: #eaeaea;
+    }
+    .information, .mainHead {
+      background-color: #295068;
+    }
+    .locations {
+      background-color: #366878;
+    }
+    .eleven {
+      background-color: #508285;
+    }
+    .two {
+      background-color: #366878;
+    }
+    .six {
+      background-color: #508285;
+    }
+    @media print{
+      input, textarea {
+        background-color: white;
+        color:white;
+      }
+      input::placeholder {
+        color:white;
+      }
+      button {
+        background-color: white;
+        color: white;
+      }
+      form p {
+        color: white;
+      }
+      #leaveInput, #meetingsInput, #programInput {
+        border-top: 0;
+      }
+      #leaveLogged, #meetingsLogged, #programsLogged {
+        border-bottom:0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2 id='date'>Tuesday, August 16</h2>
+  <table id='allTables'>
+    <tr>
+      <th colspan='3' class='mainHead'>Who Works Today</th>
+      <th rowspan='2' class='mainHead'>Lunch Breaks</th>
+      <th colspan='3' class='mainHead'>Schedule Changes</th>
+    </tr>
+    <tr>
+      <th class='information'>Full-time</th>
+      <th class='information'>Part-Time</th>
+      <th class='information'>Security</th>
+      <th class='information'>Leave</th>
+      <th class='information'>Meetings</th>
+      <th class='information'>Programs</th>
+    </tr>
+    <tr>
+      <td id='full-time-workers' rowspan='2' style='vertical-align: top'>
+      </td>
+      <td id='part-time-workers' rowspan='2' style='vertical-align: top'>
+      </td>
+      <td id='security-workers' rowspan='2' style='vertical-align: top'>
+      </td>
+      <td id='lunch-breaks' rowspan='2' style='vertical-align: top'>
+      </td>
+      <td style='vertical-align: top'id='leaveLogged'></td>
+      <td style='vertical-align: top' id='meetingsLogged'></td>
+      <td style='vertical-align: top' id='programsLogged'></td>
+    </tr>
+    <tr style='vertical-align:bottom'>
+      <td id='leaveInput' style='height:20%'>
+
+        <form style>
+          <input onClick='this.select();' type='text' id='leaveFirstHour' name='leaveFirstHour' size='1' placeholder='9'>
+          <p style='display:inline'>-</p>
+          <input onClick='this.select();' type='text' id='leaveSecondHour' name='leaveSecondHour' size='1' placeholder='11'>
+          <input onClick='this.select();' type='text' id='leaveInitials' name='leaveInitials' size='15'  placeholder='MD, RF'>
+          <button type='button' style='display:inline' id='leaveAdd' onclick='addLeave()':>Add</button>
+        </form>
+
+      </td>
+      <td id='meetingsInput' style='height:20%'>
+
+        <form style>
+          <input onClick='this.select();' type='text' id='meetingsFirstHour' name='meetingsFirstHour' size='1' placeholder='9'>
+          <p style='display:inline'>-</p>
+          <input onClick='this.select();' type='text' id='meetingsSecondHour' name='meetingSecondHour' size='1' placeholder='11'>
+          <input onClick='this.select();' type='text' id='meetingsInitials' name='meetingsInitials' size='15'  placeholder='LS, SDK'>
+          <button type='button' style='display:inline' id='meetingsAdd' onclick='addMeeting()':>Add</button>
+        </form>
+
+      </td>
+      <td id='programInput' style='height:40%'>
+
+        <form style>
+          <input onClick='this.select();' type='text' id='programFirstHour' name='programFirstHour' size='1' placeholder='9'>
+          <p style='display:inline'>-</p>
+          <input onClick='this.select();' type='text' id='programSecondHour' name='programSecondHour' size='1' placeholder='11'>
+          <textarea onClick='this.select();' type='text' id='programInitials' name='programInitials' rows='2' cols='15'  placeholder='Program (YH, AY)'></textarea>
+          <button type='button' style='display:inline' id='programAdd' onclick='addProgram()':>Add</button>
+        </form>
+
+      </td>
+    </tr>
+  </table>
+  <table class='schedule' id='allTables'>
+    <tr>
+      <th class='locations'></th>
+      <th scope='col'>9-11</th>
+      <th scope='col' class='eleven'>11-1</th>
+      <th scope='col'>1-2</th>
+      <th scope='col' class='two'>2-4</th>
+      <th scope='col'>4-6</th>
+      <th scope='col' class='six'>6-8</th>
+    </tr>
+    <tr>
+      <th colspan='7' class='workroom'>Workroom</td>
+    </tr>
+    <tr>
+      <th scope='row' class='locations'>Pickup Window</th>
+      <td id='ninePUW'></td>
+      <td class='eleven' id='elevenPUW'></td>
+      <td id='onePUW'></td>
+      <td class='two' id='twoPUW'></td>
+      <td id='fourPUW'></td>
+      <td class='six' id='sixPUW'></td>
+    </tr>
+    <tr>
+      <th scope='row' class='locations'>Floor Lead</th>
+      <td id='nineFL'></td>
+      <td class='eleven' id='elevenFL'></td>
+      <td id='oneFL'></td>
+      <td class='two' id='twoFL'></td>
+      <td id='fourFL'></td>
+      <td class='six' id='sixFL'></td>
+    </tr>
+    <tr>
+      <th colspan='7' class='frontDesk'>Front Desk</td>
+    </tr>
+    <tr>
+      <th scope='row' class='locations'>Service Point 1</th>
+      <td id='nineSP1a'></td>
+      <td class='eleven' id='elevenSP1a'></td>
+      <td id='oneSP1a'></td>
+      <td class='two' id='twoSP1a'></td>
+      <td id='fourSP1a'></td>
+      <td class='six' id='sixSP1a'></td>
+    </tr>
+    <tr>
+      <th scope='row' class='locations'>Service Point 1</th>
+      <td id='nineSP1b'></td>
+      <td class='eleven' id='elevenSP1b'></td>
+      <td id='oneSP1b'></td>
+      <td class='two' id='twoSP1b'></td>
+      <td id='fourSP1b'></td>
+      <td class='six' id='sixSP1b'></td>
+    </tr>
+    <tr>
+      <th colspan='7' class='compDesk'>Computer Desk</td>
+    </tr>
+    <tr>
+      <th scope='row' class='locations'>Service Point 2</th>
+      <td id='nineSP2a'></td>
+      <td class='eleven' id='elevenSP2a'></td>
+      <td id='oneSP2a'></td>
+      <td class='two' id='twoSP2a'></td>
+      <td id='fourSP2a'></td>
+      <td class='six' id='sixSP2a'></td>
+    </tr>
+    <tr>
+      <th scope='row' class='locations'>Service Point 2</th>
+      <td id='nineSP2b'></td>
+      <td class='eleven' id='elevenSP2b'></td>
+      <td id='oneSP2b'></td>
+      <td class='two' id='twoSP2b'></td>
+      <td id='fourSP2b'></td>
+      <td class='six' id='sixSP2b'></td>
+    </tr>
+    <tr>
+      <th colspan='7' class='staffTime'>Staff/Time Permitting</td>
+    </tr>
+    <tr>
+      <th scope='row' class='locations' id='programs'>Programs</th>
+      <td id='ninePrograms'></td>
+      <td class='eleven' id='elevenPrograms'></td>
+      <td id='onePrograms'></td>
+      <td class='two' id='twoPrograms'></td>
+      <td id='fourPrograms'></td>
+      <td class='six' id='sixPrograms'></td>
+    </tr>
+    <tr>
+      <th scope='row' class='locations' id='meetings'>Meetings</th>
+      <td id='nineMeetings'></td>
+      <td class='eleven' id='elevenMeetings'></td>
+      <td id='oneMeetings'></td>
+      <td class='two' id='twoMeetings'></td>
+      <td id='fourMeetings'></td>
+      <td class='six' id='sixMeetings'></td>
+    </tr>
+    <tr>
+      <th scope='row' class='locations'>Project Time</th>
+      <td id='nineProject'></td>
+      <td class='eleven' id='elevenProject'></td>
+      <td id='oneProject'></td>
+      <td class='two' id='twoProject'></td>
+      <td id='fourProject'></td>
+      <td class='six' id='sixProject'></td>
+    </tr>
+  </table>
+  
+  <button type='button' id='checker' onclick='assignableButton()'>Assignable Button</button>
+
+  <table class = 'invisible'>
+    <tr>
+      <td id = 'nineLeave'></td>
+      <td id = 'elevenLeave'></td>
+      <td id = 'oneLeave'></td>
+      <td id = 'twoLeave'></td>
+      <td id = 'fourLeave'></td>
+      <td id = 'sixLeave'></td>
+    </tr>
+  </table>
+
+  <script src='script.js'></script>
+</body>
+
+</html>

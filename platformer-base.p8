@@ -22,8 +22,8 @@ success=false
   jumping=false,
   falling=false,
   on_ice=false,
-  acc=.16,
-  boost=3.95
+  acc=.2,
+  boost=3.7
  }
  p_move_smoke={
   sp=49,
@@ -45,7 +45,7 @@ success=false
   flp=false
  }
  gravity=.2
- friction=.87
+ friction=.85
 
  cam_x=0
  map_start=0
@@ -100,13 +100,11 @@ function p_update()
  end
 
  if p.on_ice then 
-  friction=.984
-  p.acc=.02
-  p.max_dx=.7
+  friction=.985
+  p.acc=.015
  elseif not p.on_ice then
-  p.max_dx=.55
-  friction=.87
-  p.acc=.16
+  friction=.85
+  p.acc=.18
  end
  p.dy+=gravity
  p.dx*=friction
@@ -241,25 +239,9 @@ function p_animate()
  elseif p.falling then
   sfx(-1,0)
   p.sp=3
- elseif p.sliding 
- and not btn(0)
- and not btn(1) then
+ elseif p.sliding then
   sfx(-1,0)
   p.sp=7
- elseif (p.sliding
- and p.on_ice)
- and (btn(0)
- or btn(1)) then
-   if time()-p.anim>.1 then
-    p.anim=time()
-    p.sp+=1
-    if p.sp>6 then
-     p.sp=5
-    end
-    if p.sp<5 then
-     p.sp=5
-    end
-  end
  elseif p.running then
   if not sfx(0,0) then
   sfx(0,0)
@@ -422,15 +404,15 @@ ddd77ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 dd7dd7dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 dddddddddd0000dddd0000dddd0000dddd0000dddd0000dddd0000dddd0000dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
-ddddddddd077a90dd077a90dd077a90dd077a90dd077a90dd077a90dd077a90dddddddd0000dddddddddddd0000dddddddddddd0000dddddddddddd0000ddddd
-dddddddd07a9999007a9999007a9999007a9999007a9999007a9999007a99990ddddd0000500ddddddddd0000500ddddddddd0000500ddddddddd0000500dddd
-dddddddd017070f0017070f0017070f0017070f0017070f0017070f0017070f0dd0d00158580dddddd0d01158580dddddd0d01158580dddddd0d00158580dddd
-dddddddd0f1111100f1111100f1111100f1111100f1111100f1111100f111110dd0011158580dddddd0011158580dddddd0011158580dddddd0011158580dddd
-ddddddddd011e10dd011e10df911e10fd0f1e10fd011e10dd011e10dd011e10dddd000165060ddddddd011165060ddddddd011165060ddddddd000165060dddd
-ddddddddd091110d0f0111f000911190d09111900f9111f00f9111f00f9111f0ddddd0111110ddddddd011111110dddddddd01111110ddddddddd0111110dddd
-dddddddd0f0990f0d009900d01099020dd09900dd00992200229900dd009920dddd001511150dddddd0111511150ddddddd011511150ddddddd000511150dddd
-ddddddddd044220dd044220dd040020dd04020dddd04000dd00040dddd04420dd00000000000dddddd0000000000dddd000000000000ddddd00000000000dddd
-dddddddddd0000dddd0000dddd00d0dddd0000ddddd0dddddddd0ddddd0000dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+ddddddddd011110dd011110dd011110dd011110dd011110dd011110dd011110dddddddd0000dddddddddddd0000dddddddddddd0000dddddddddddd0000ddddd
+dddddddd01111110011111100111111001111110011111100111111001111110ddddd0000500ddddddddd0000500ddddddddd0000500ddddddddd0000500dddd
+dddddddd047070f0047070f0047070f0047070f0047070f0047070f0047070f0dd0d00158580dddddd0d01158580dddddd0d01158580dddddd0d00158580dddd
+dddddddd0f7070f00f7070f00f7070f00f7070f00f7070f00f7070f00f7070f0dd0011158580dddddd0011158580dddddd0011158580dddddd0011158580dddd
+ddddddddd0ffef0dd0ffef0df8ffef0fd0ffef0fd0ffef0dd0ffef0dd0ffef0dddd000165060ddddddd011165060ddddddd011165060ddddddd000165060dddd
+ddddddddd008800d0f0880f000888020d08880200f8884f00f8880f00f8880f0ddddd0111110ddddddd011111110dddddddd01111110ddddddddd0111110dddd
+dddddddd0f0820f0d008200d07082060dd08200dd00826600668200dd008760dddd001511150dddddd0111511150ddddddd011511150ddddddd000511150dddd
+ddddddddd077660dd077660dd070060dd07060dddd070dddddd070dddd00760dd00000000000dddddd0000000000dddd000000000000ddddd00000000000dddd
+dddddddddd0000dddd0000dddd00d0dddd0000ddddd0dddddddd0dddddd000dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd

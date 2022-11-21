@@ -17,18 +17,20 @@ function _init()
  ball.col=8
  ball.speed=2
  ball.rand_dir_x=rnd(1)-1
- ball.rand_dir_y=rnd(1)-1
+ ball.rand_dir_y=rnd(.25)-.25
  ball.dx=0
  ball.dy=0
  ball.max_speed_x=2
  ball.max_speed_y=2
- ball.acc=.5
+ ball.acc=1
+ ball.bounce_x=false
+ ball.bounce_y=false
 end
 
 function _update()
  p_update()
- ball_update()
  collision_update()
+ ball_update()
 end
 
 function p_update()
@@ -47,14 +49,16 @@ function p_update()
 end
 
 function ball_update()
- ball.dx-=ball.acc
- --ball.dy+=ball.acc
-
- ball.dx=mid(-ball.max_speed_x,ball.dx,ball.max_speed_x)
- ball.dy=mid(-ball.max_speed_y,ball.dy,ball.max_speed_y)
-
- ball.x+=ball.dx
- ball.y+=ball.dy
+ if not ball.bounce_x then
+  ball.x+=ball.acc
+ elseif ball.bounce_x then
+  ball.x-=ball.acc
+ end
+ if not ball.bounce_y then
+  ball.y+=ball.acc*ball.rand_dir_y
+ elseif ball.bounce_y then
+  ball.y-=ball.acc*ball.rand_dir_y
+ end
 end
 
 function collision_update()
@@ -63,12 +67,28 @@ function collision_update()
  local ball_t=ball.y-ball.r
  local ball_b=ball.y+ball.r
 
- if ball_r>128
- or ball_l<0 then
-  ball.dx*=-1
- elseif ball_t<0
- or ball_b>128 then
-  ball.dy*=-1
+ --player
+ if ball_l<=p.x2+2 then
+  ball.bounce_x=true
+ elseif ball_r>=127 then
+  ball.bounce_x=false
+ end
+ if ball_t<=0 then
+  ball.bounce_y=true
+ elseif ball_b>=127 then
+  ball.bounce_y=false
+ end
+
+ --walls
+ if ball_l<=0 then
+  ball.bounce_x=true
+ elseif ball_r>=127 then
+  ball.bounce_x=false
+ end
+ if ball_t<=0 then
+  ball.bounce_y=true
+ elseif ball_b>=127 then
+  ball.bounce_y=false
  end
 end
 
@@ -76,8 +96,6 @@ function _draw()
  cls()
  rectfill(p.x1,p.y1,p.x2,p.y2,p.col)
  circfill(ball.x,ball.y,ball.r,ball.col)
- print(ball.dx)
- print(ball.dy)
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000

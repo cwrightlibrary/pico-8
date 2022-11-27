@@ -36,32 +36,18 @@ end
 
 function _update60()
  p_update()
- snow.y+=.5
- if snow.y>64 then
-  snow.y=0
- end
+ anim_snow()
 end
 
 function _draw()
  cls(12)
  map(16,0,0)
- spr(snow.sp,snow.x,snow.y-86,snow.w,snow.h)
- spr(snow.sp,snow.x,snow.y-64,snow.w,snow.h)
- spr(snow.sp,snow.x,snow.y-32,snow.w,snow.h)
- spr(snow.sp,snow.x+64,snow.y,snow.w,snow.h)
- spr(snow.sp,snow.x+64,snow.y+32,snow.w,snow.h)
- spr(snow.sp,snow.x+64,snow.y+64,snow.w,snow.h)
- spr(snow.sp,snow.x,snow.y,snow.w,snow.h)
- spr(snow.sp,snow.x,snow.y+32,snow.w,snow.h)
- spr(snow.sp,snow.x,snow.y+64,snow.w,snow.h)
- spr(snow.sp,snow.x+64,snow.y,snow.w,snow.h)
- spr(snow.sp,snow.x+64,snow.y+32,snow.w,snow.h)
- spr(snow.sp,snow.x+64,snow.y+64,snow.w,snow.h)
+ draw_snow()
  map(0,0,0,0)
  palt(0,false)
  palt(12,true)
  spr(p.sp,p.x,p.y,p.w/8,p.w/8,p.flp)
- --rectfill(vx1,vy1,vx2,vy2)
+ rectfill(vx1,vy1,vx2,vy2)
 end
 
 function p_update()
@@ -148,7 +134,7 @@ function map_collision(obj,aim,flag)
  local y1=0
  local y2=0
  if aim=='left' then
-  x1=x x2=x-2
+  x1=x+1 x2=x-1
   y1=y+1 y2=y+h-2
  elseif aim=='right' then
   x1=x+w-2 x2=x+w
@@ -173,23 +159,46 @@ function map_collision(obj,aim,flag)
   return false
  end
 end
+
+function draw_snow()
+ spr(snow.sp,snow.x,snow.y-128,snow.w,snow.h,true,false)
+ spr(snow.sp,snow.x,snow.y-96,snow.w,snow.h)
+ spr(snow.sp,snow.x,snow.y-64,snow.w,snow.h)
+ spr(snow.sp,snow.x,snow.y-32,snow.w,snow.h,true)
+ spr(snow.sp,snow.x,snow.y,snow.w,snow.h,true,false)
+ spr(snow.sp,snow.x,snow.y+32,snow.w,snow.h,false)
+ spr(snow.sp,snow.x,snow.y+64,snow.w,snow.h,true,false)
+ spr(snow.sp,snow.x,snow.y+96,snow.w,snow.h,false,true)
+
+ spr(snow.sp,snow.x+64,snow.y-128,snow.w,snow.h,false)
+ spr(snow.sp,snow.x+64,snow.y-96,snow.w,snow.h,true)
+ spr(snow.sp,snow.x+64,snow.y-64,snow.w,snow.h,true)
+ spr(snow.sp,snow.x+64,snow.y-32,snow.w,snow.h,false)
+ spr(snow.sp,snow.x+64,snow.y,snow.w,snow.h,false)
+ spr(snow.sp,snow.x+64,snow.y+32,snow.w,snow.h,true)
+ spr(snow.sp,snow.x+64,snow.y+64,snow.w,snow.h,false)
+ spr(snow.sp,snow.x+64,snow.y+96,snow.w,snow.h,true)
+end
+
+function anim_snow()
+ snow.y+=.5
+ if snow.y>128 then
+  snow.y=0
+ end
+end
+
+function anim_clouds()
+ 
+end
 __gfx__
 00000000cc0000cccc0000cccccccccccc0000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000c044440cc044440ccc0000ccc044440ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00700700c0f0f0f0c0f0f0f0c044440cc0f0f0f0cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00077000c0ffeff0c0ffeff0c0f0f0f0c0ffeff0cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00077000c088880c0f888840c0ffeff00f888840cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-007007000f8002400780020c0f888840c080200ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000c0770770c00c0770c0770770c0770ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00000000c088880cc088880ccc0000ccc088880ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00700700c0f0f0f0c0f0f0f0c088880cc0f0f0f0cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00077000c077e770c077e770c0f0f0f0c077e770cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00077000c088880c0f888840c077e7700f888840cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+007007000f8002400680020c0f888840c080200ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00000000c0660660c00c0660c0660660c0660ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 00000000cc00000cccccc00ccc00000ccc00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000ccffffccccffffccccccccccccffffcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000cff0f0fccff0f0fcccffffcccff0f0fccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000cffffffccffffffccff0f0fccffffffccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000ccffffccccffffcccffffffcccffffcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000c888888cf888888fccffffccf888888fcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000fc8888cfcc8888ccf888888fcc8888cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000cc8cc8ccc88cc8cccc8888cccc8c8ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-00000000c88cc88cccccc88ccc88c88ccc88cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 00000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 00000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 00000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -198,6 +207,14 @@ __gfx__
 00000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 00000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 00000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00000000cc0000cccccccccccc0000cccccccccccccccccccccccccccc0000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00000000c088880cccccccccc088880ccccccccccc0000ccccccccccc088880ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00000000c0f0f0f0ccccccccc0f0f0f0ccccccccc088880cccccccccc0f0f0f0cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00000000c077e770ccccccccc077e770ccccccccc0f0f0f0ccccccccc077e770cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00000000c088880ccccccccc0f888840ccccccccc077e770cccccccc0f888840cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+000000000f800240cccccccc0680020ccccccccc0f888840ccccccccc080200ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00000000c0660660ccccccccc00c0660ccccccccc0660660ccccccccc0660ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+00000000cc00000cccccccccccccc00ccccccccccc00000ccccccccccc00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 00000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 00000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 00000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

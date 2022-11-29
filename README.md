@@ -1,16 +1,17 @@
 # README
 
 ## To-do
-- Make
-- [ ] MiniMotorways map
-- [ ] house
-- [ ] destination
-- [ ] road
-- [ ] car
-- [ ] car travel between house/destination
-- [ ] color based travelers
-- [ ] car remember its own home/destination
-- [ ] user make roads with mouse or with selector cursor over grid moved with arrow keys and creating roads with jump key
+- [ ] Simple Library game
+
+## Library Game
+### Concept
+Shelve books and stop library gremlins from knocking books off the shelves.
+
+### Library Game To-Do
+- [ ] Player design
+- [ ] Map design
+- [ ] Enemy design
+- [ ] Music/sound design
 
 ## Resources
 - https://www.lexaloffle.com/pico-8.php

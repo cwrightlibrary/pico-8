@@ -36,17 +36,38 @@ function _init()
  looper=false
  waiting=0
 
- rainx={}
- rainy={}
+ rain={
+  x1={},
+  y1={},
+  x2={},
+  y2={},
+  col=7
+ }
+ rain.x1=20
+ rain.y1=20
+ rain.x2=0
+ rain.y2=3
 end
 
 function rain_update()
- 
+ rain.x2=rain.x1+4
+ rain.y2=rain.y1+4
+ rain.x1+=2
+ rain.y1+=2
+
+ if rain.x1>128
+ or rain.y1>128 then
+  rain.x1=flr(rnd(128))
+  rain.y1=0
+  rain.x2=rain.x1+4
+  rain.y2=rain.y1+4
+ end
 end
 
 function _update60()
  p_update()
  p_animate()
+ rain_update()
 end
 
 function _draw()

@@ -36,13 +36,12 @@ function _init()
  looper=false
  waiting=0
 
- rain={
-  x1=20,
-  y1=20,
-  x2=23,
-  y2=23,
-  col=7
- }
+ rainx={}
+ rainy={}
+end
+
+function rain_update()
+ 
 end
 
 function _update60()

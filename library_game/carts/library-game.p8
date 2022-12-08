@@ -37,6 +37,7 @@ function _init()
   max_dy=4,
   anim=0,
   hold_anim=0,
+  waiting=false,
   falling=false,
   landed=true,
   boost=3
@@ -57,16 +58,33 @@ function _init()
 end
 
 function bouncer_update()
-  bouncer.dy+=gravity
-  bouncer.dx*=friction
+ bouncer.dy+=gravity
+ bouncer.dx*=friction
 
- if not bouncer.waiting then
- end
- if p.dy>0 then
-  bouncer.falling=true
+ if bouncer.dy>0 then
+  bouncer.fallling=true
   bouncer.landed=false
+  bouncer.dy=0
   bouncer.dy=limit_speed(bouncer.dy,bouncer.max_dy)
-
+  if map_collision(bouncer,'down',0)
+  or map_collision(bouncer,'down',1) then
+   bouncer.landed=true
+   bouncer.falling=false
+   bouncer.dy=0
+   bouncer.y-=((bouncer.y+bouncer.h+1)%8)-1
+  end
+ end
+ if bouncer.dx<0 then
+  bouncer.dx=limit_speed(bouncer.dx,bouncer.max_dx)
+  if map_collision(bouncer,'left',0) then
+   bouncer.dx=0
+  end
+ elseif bouncer.dx>0 then
+  bouncer.dx=limit_speed(bouncer.dx,bouncer.max_dx)
+  if map_collision(bouncer,'right',0) then
+   bouncer.dx=0
+  end
+ end
 end
 
 function bouncer_animate()
@@ -81,6 +99,7 @@ function _update60()
  p_update()
  p_animate()
  rain_update()
+ bouncer_update()
 end
 
 function _draw()
@@ -90,6 +109,7 @@ function _draw()
  map(0,0)
  bouncer_draw()
  p_draw()
+ print(bouncer.waiting)
 end
 -->8
 --player

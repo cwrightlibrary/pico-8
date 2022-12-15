@@ -9,6 +9,7 @@ function _init()
  coin_index={}
  q_brick_index={}
  p_brick_index={}
+ brick_coin_draw_again=false
 
  sk_index={}
  sk_small_index={}
@@ -46,6 +47,7 @@ function _draw()
  rain_draw()
  map(0,0)
  add_coin()
+ add_brick_coin()
  add_q_brick()
  add_p_brick()
  add_sk()
@@ -369,6 +371,15 @@ function add_coin()
  end
 end
 
+function add_brick_coin()
+ if brick_coin_draw_again then
+  for coin in all(coin_index) do
+   spr(coin.sp,coin.x*8,coin.y*8,coin.w/8,coin.h/8)
+   brick_coin_draw_again=false
+  end
+ end
+end
+
 function coin_update()
  if #coin_index!=0 then
   for coin in all(coin_index) do
@@ -408,7 +419,7 @@ function add_q_brick()
   end
  end
 end
-coloris=0
+
 function add_p_brick()
  obj_search('p_brick',155)
  for p_brick in all(p_brick_index) do
@@ -469,6 +480,7 @@ function q_brick_update()
      else
       q_brick.fin=true
       q_brick.y=q_brick.return_height
+      add_object('coin',q_brick.x,q_brick.y-1,8,8)
      end
     end
    end
@@ -574,7 +586,7 @@ function add_object(obj_name,objx,objy,objw,objh)
    h=objh,
    shimmer=0,
    no_shimmer_length=flr(rnd(8))+3,
-   anim=0
+   anim=0,
   }
   add(coin_index,coin)
  elseif obj_name=='sk' then

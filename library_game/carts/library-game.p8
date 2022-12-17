@@ -467,6 +467,7 @@ end
 function q_brick_update()
  if #q_brick_index!=0 then
   for q_brick in all(q_brick_index) do
+   --animation
    if not q_brick.run
    and not q_brick.fin then
     q_brick.sp+=.15
@@ -480,6 +481,7 @@ function q_brick_update()
    and q_brick.fin then
     q_brick.sp=155
    end
+   --update
    if object_collide(p.x,p.y+1,p.x+p.w,p.y+1+p.h-2,q_brick.x*8,(q_brick.y*8)+8,q_brick.x*8+q_brick.w,(q_brick.y*8)+9)
    and p.jumping
    and not q_brick.fin then
@@ -490,30 +492,45 @@ function q_brick_update()
    end
    if q_brick.hit
    and not q_brick.run then
-    if q_brick.start_height<q_brick.max_height then
+    if q_brick.start_height<q_brick.max_height/2 then
      if time()-q_brick.anim>.001 then
       q_brick.anim=time()
       q_brick.start_height+=.15
       q_brick.y-=.15
+     end
+    elseif q_brick.start_height<q_brick.max_height/6 then
+     if time()-q_brick.anim>.001 then
+      q_brick.anim=time()
+      q_brick.start_height+=.08
+      q_brick.y-=.08
+     end
+    else
+     if time()-q_brick.anim>.001 then
+      q_brick.anim=time()
+      q_brick.start_height+=.02
+      q_brick.y-=.02
       q_brick.run=true
      end
     end
    elseif q_brick.run then
-    if q_brick.hold<2 then
-     q_brick.hold+=.25
+    if q_brick.y-q_brick.return_height>.1 then
+     if time()-q_brick.anim>.001 then
+      q_brick.anim=time()
+      q_brick.y+=.15
+     end
+    elseif q_brick.start_height>=q_brick.max_height 
+    and q_brick.y-q_brick.return_height>.02 then
+     q_brick.fin=true
+     if time()-q_brick.anim>.001 then
+      q_brick.anim=time()
+      q_brick.y+=01
+     end
     else
-     if q_brick.y-q_brick.return_height>.1 then
-      if time()-q_brick.anim>.001 then
-       q_brick.anim=time()
-       q_brick.y+=.15
-      end
-     else
-      q_brick.fin=true
-      q_brick.y=q_brick.return_height
-      if not q_brick.added_coin then
-       add_object('coin',q_brick.x,q_brick.y-1,8,8)
-       q_brick.added_coin=true
-      end
+     q_brick.fin=true
+     q_brick.y=q_brick.return_height
+     if not q_brick.added_coin then
+      add_object('coin',q_brick.x,q_brick.y-1,8,8)
+      q_brick.added_coin=true
      end
     end
    end
@@ -714,7 +731,7 @@ function add_object(obj_name,objx,objy,objw,objh)
    fin=false,
    return_height=objy,
    start_height=0,
-   max_height=4/8,
+   max_height=6/8,
    hit=false,
    added_coin=false
   }

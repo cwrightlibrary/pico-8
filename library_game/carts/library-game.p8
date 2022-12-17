@@ -7,6 +7,8 @@ function _init()
  p_init()
  --sk_init()
  coin_index={}
+ spawn_coin_index={}
+ spawn_coin_draw_again=true
  q_brick_index={}
  p_brick_index={}
  platform_searched=false
@@ -48,7 +50,7 @@ function _draw()
  map(0,0)
  fix_platform()
  add_coin()
- add_brick_coin()
+ add_spawn_coin()
  add_q_brick()
  add_p_brick()
  add_sk()
@@ -388,19 +390,46 @@ function add_sk_small()
 end
 -->8
 --coins/bricks/platforms
+function add_spawn_coin()
+ obj_search('spawn_coin',128)
+ if spawn_coin_draw_again then
+  for spawn_coin in all(spawn_coin_index) do
+   spr(spawn_con.sp,spawn_coin.x*8,spawn_coin.y*8,spawn_coin.w/8,spawn_coin.h/8)
+   spawn_coin_draw_again=false
+  end
+ end
+end
+
+function spawn_coin_update()
+ if#spawn_coin_index!=0 then
+  for spawn_coin in all(spawn_coin_index) do
+   spawn_coin.sp+=.15
+   if spawn_coin.sp>=184
+   and spawn_coin.shimmer<spawn_coin.no_shimmer_length then
+    spawn_coin.shimmer+=1
+    spawn_coin.sp=181
+   end
+   if spawn_coin.sp>188
+   and spawn_coin.shimmer==spawn_coin.no_shimmer_length then
+    spawn_coin.sp=181
+    spawn_coin.shimmer=0
+    spawn_coin.no_shimmer_length=flr(rnd(8))+3
+   end
+   if object_collide(p.x+3,p.y+1,p.x+3+p.w-6,p.y+1+p.h-1,spawn_coin.x*8,spawn_coin.y*8,spawn_coin.x*8+spawn_coin.w,spawn_coin.y*8+spawn_coin.h) then
+    spawn_coin.y=-10
+    sfx(-1,3)
+    sfx(1,3)
+    p.score+=1
+    del(spawn_coin_index,spawn_coin)
+   end
+  end
+ end
+end
+
 function add_coin()
  obj_search('coin',128)
  for coin in all(coin_index) do
   spr(coin.sp,coin.x*8,coin.y*8,coin.w/8,coin.h/8)
- end
-end
-
-function add_brick_coin()
- if brick_coin_draw_again then
-  for coin in all(coin_index) do
-   spr(coin.sp,coin.x*8,coin.y*8,coin.w/8,coin.h/8)
-   brick_coin_draw_again=false
-  end
  end
 end
 
@@ -511,7 +540,7 @@ function q_brick_update()
       q_brick.fin=true
       q_brick.y=q_brick.return_height
       if not q_brick.added_coin then
-       add_object('coin',q_brick.x,q_brick.y-1,8,8)
+       add_object('spawn_coin',q_brick.x,q_brick.y-2,8,8)
        q_brick.added_coin=true
       end
      end
@@ -651,6 +680,18 @@ function add_object(obj_name,objx,objy,objw,objh)
    anim=0,
   }
   add(coin_index,coin)
+ elseif obj_name=='spawn_coin' then
+  local spawn_coin={
+   sp=181,
+   x=objx,
+   y=objy,
+   w=objw,
+   h=objh,
+   shimmer=0,
+   no_shimmer_length=flr(rnd(8))+3,
+   anim=0
+  }
+  add(spawn_coin_index,spawn_coin)
  elseif obj_name=='sk' then
   local newx=objx*8
   local newy=objy*8

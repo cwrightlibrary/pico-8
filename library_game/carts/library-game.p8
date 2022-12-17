@@ -798,6 +798,10 @@ function map_collision(obj,aim,flag)
  else
   return false
  end
+ if (fget(mget(x1,y1),flag)
+ or fget(mget(x1,y2),flag)
+ or fget(mget(x2,y1),flag)
+ or fget(mget(x2,y2),flag))
 end
 --hitbox collision
 function object_collide(player_x1,player_y1,player_x2,player_y2,enemy_x1,enemy_y1,enemy_x2,enemy_y2)

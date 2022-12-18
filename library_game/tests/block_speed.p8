@@ -7,18 +7,42 @@ function _init()
   sp=1,
   x=24,
   y=56,
+  init_y=56,
+  max_y=50,
+  start=true,
+  hit=false,
+  apex=false,
+  speed_up=.1,
+  speed_down=.1,
+  friction=1.01,
   anim=0
  }
  box2={
   sp=17,
   x=56,
   y=56,
+  init_y=56,
+  max_y=55.5,
+  start=true,
+  hit=false,
+  apex=false,
+  speed_up=.1,
+  speed_down=.1,
+  friction=1.05,
   anim=0
  }
  box3={
   sp=33,
   x=88,
   y=56,
+  init_y=56,
+  max_y=55.5,
+  start=true,
+  hit=false,
+  apex=false,
+  speed_up=.1,
+  speed_down=.1,
+  friction=1.05,
   anim=0
  }
 end
@@ -40,9 +64,16 @@ function _draw()
  spr(box3.sp,box3.x,box3.y)
  
  rectfill(0,0,25,5,0)
- rectfill(0,5,95,11,0)
- print(time(),7)
- print('left-down-right buttons')
+ print(box1.speed_up,14)
+
+ rectfill(box1.x,box1.init_y+9,box1.x+10,box1.init_y+15,0)
+ print('y='..flr(box1.y),box1.x-3,box1.init_y+10,10)
+
+ rectfill(box2.x,box2.init_y+9,box2.x+10,box2.init_y+15,0)
+ print('y='..flr(box2.y),box2.x-3,box2.init_y+10,12)
+
+ rectfill(box3.x,box3.init_y+9,box3.x+10,box3.init_y+15,0)
+ print('y='..flr(box3.y),box3.x-3,box3.init_y+10,11)
 end
 
 function _update60()
@@ -53,8 +84,43 @@ end
 -->8
 --brick1
 function _box1()
- if btn(0) then
+ if btn(0)
+ and box1.start then
   box1.sp=2
+
+  box1.hit=true
+  box1.start=false
+ end
+ 
+ if box1.hit then
+  if time()-box1.anim>.1 then
+   if box1.y>box1.max_y then
+    if box1.speed_up>.04 then
+     box1.speed_up/=box1.friction
+    end
+    box1.y-=box1.speed_up
+   else
+    box1.apex=true
+    box1.hit=false
+   end
+  end
+
+ elseif box1.apex then
+  if time()-box1.anim>.1 then
+   if box1.y<box1.init_y then
+    if box1.speed_down>.04 then
+     box1.speed_down/=box1.friction
+    end
+    box1.y+=box1.speed_down
+   else
+    box1.start=true
+    box1.apex=false
+   end
+  end
+ end
+
+ if box1.start then
+  box1.sp=1
  end
 end
 -->8

@@ -8,13 +8,16 @@ function _init()
   x=24,
   y=56,
   init_y=56,
-  max_y=50,
+  max_y=53,
   start=true,
   hit=false,
   apex=false,
-  speed_up=.1,
-  speed_down=.1,
-  friction=1.01,
+  speed=.5,
+  speed_low=0.04,
+  speed_up=0,
+  speed_down=0,
+  slow_down=1.1,
+  fast_up=1.2,
   anim=0
  }
  box2={
@@ -22,13 +25,16 @@ function _init()
   x=56,
   y=56,
   init_y=56,
-  max_y=55.5,
+  max_y=53,
   start=true,
   hit=false,
   apex=false,
-  speed_up=.1,
-  speed_down=.1,
-  friction=1.05,
+  speed=.5,
+  speed_low=0.04,
+  speed_up=0,
+  speed_down=0,
+  slow_down=1.1,
+  fast_up=1.2,
   anim=0
  }
  box3={
@@ -36,15 +42,28 @@ function _init()
   x=88,
   y=56,
   init_y=56,
-  max_y=55.5,
+  max_y=53,
   start=true,
   hit=false,
   apex=false,
-  speed_up=.1,
-  speed_down=.1,
-  friction=1.05,
+  speed_up=0,
+  speed_down=0,
   anim=0
  }
+ box1.speed_low=0.04
+ box1.speed=.5
+ box1.slow_down=1.1
+ box1.fast_down=1.2
+
+ box2.speed_low=0.03
+ box2.speed=.4
+ box2.slow_down=1.12
+ box2.fast_down=1.25
+
+ box3.speed_low=0.02
+ box3.speed=.55
+ box3.slow_down=1.15
+ box3.fast_down=1.25
 end
 
 function _draw()
@@ -64,7 +83,7 @@ function _draw()
  spr(box3.sp,box3.x,box3.y)
  
  rectfill(0,0,25,5,0)
- print(box1.speed_up,14)
+ print(box1.speed_down,14)
 
  rectfill(box1.x,box1.init_y+9,box1.x+10,box1.init_y+15,0)
  print('y='..flr(box1.y),box1.x-3,box1.init_y+10,10)
@@ -84,57 +103,59 @@ end
 -->8
 --brick1
 function _box1()
- if btn(0)
- and box1.start then
-  box1.sp=2
-
-  box1.hit=true
-  box1.start=false
- end
- 
- if box1.hit then
-  if time()-box1.anim>.1 then
-   if box1.y>box1.max_y then
-    if box1.speed_up>.04 then
-     box1.speed_up/=box1.friction
-    end
-    box1.y-=box1.speed_up
-   else
-    box1.apex=true
-    box1.hit=false
-   end
-  end
-
- elseif box1.apex then
-  if time()-box1.anim>.1 then
-   if box1.y<box1.init_y then
-    if box1.speed_down>.04 then
-     box1.speed_down/=box1.friction
-    end
-    box1.y+=box1.speed_down
-   else
-    box1.start=true
-    box1.apex=false
-   end
-  end
- end
-
- if box1.start then
-  box1.sp=1
- end
+ box_move(box1,0,1,2)
 end
 -->8
 --brick2
 function _box2()
- if btn(3) then
-  box2.sp=18
- end
+ box_move(box2,3,17,18)
 end
 -->8
 --brick3
 function _box3()
- if btn(1) then
-  box3.sp=34
+ box_move(box3,1,33,34)
+end
+
+function box_move(box,btnn,sp1,sp2)
+ if (btn(btnn) or btn(2))
+ and box.start then
+  box.sp=sp2
+
+  box.hit=true
+  box.start=false
+ end
+ 
+ if box.hit then
+  if time()-box.anim>.1 then
+   if box.y>=box.max_y then
+    if box.speed_up>box.speed_low then
+     box.speed_up/=box.slow_down
+    end
+    box.y-=box.speed_up
+   else
+    box.apex=true
+    box.hit=false
+   end
+  end
+
+ elseif box.apex then
+  if time()-box.anim>.1 then
+   if box.y<box.init_y then
+    if box.speed_down>=box.speed_low then
+     box.speed_down*=box.fast_down
+    end
+    box.y+=box.speed_down
+   else
+    box.start=true
+    box.apex=false
+   end
+  end
+ end
+
+ if box.start then
+  box.sp=sp1
+  box.speed_up=box.speed
+  box.speed_down=box.speed_low
  end
 end
 __gfx__

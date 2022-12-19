@@ -515,49 +515,34 @@ function q_brick_update()
     p.dy=0
     p.y+=1
    end
-   if q_brick.hit
-   and not q_brick.run then
-    if q_brick.start_height<q_brick.max_height/2 then
-     if time()-q_brick.anim>.001 then
-      q_brick.anim=time()
-      q_brick.start_height+=.15
-      q_brick.y-=.15
-     end
-    elseif q_brick.start_height<q_brick.max_height/6 then
-     if time()-q_brick.anim>.001 then
-      q_brick.anim=time()
-      q_brick.start_height+=.08
-      q_brick.y-=.08
-     end
-    else
-     if time()-q_brick.anim>.001 then
-      q_brick.anim=time()
-      q_brick.start_height+=.02
-      q_brick.y-=.02
-      q_brick.run=true
-     end
+  end
+ end
+end
+
+function brick_hit_move(brick)
+ if brick.hit then
+  if time()-brick.anim>.1 then
+   if brick.y>=brick.max_y then
+    if brick.speed_up>brick.speed_low then
+     brick.speed_up/=brick.slow_down
     end
-   elseif q_brick.run then
-    if q_brick.y-q_brick.return_height>.1 then
-     if time()-q_brick.anim>.001 then
-      q_brick.anim=time()
-      q_brick.y+=.15
-     end
-    elseif q_brick.start_height>=q_brick.max_height 
-    and q_brick.y-q_brick.return_height>.02 then
-     q_brick.fin=true
-     if time()-q_brick.anim>.001 then
-      q_brick.anim=time()
-      q_brick.y+=.01
-     end
-    else
-     q_brick.fin=true
-     q_brick.y=q_brick.return_height
-     if not q_brick.added_coin then
-      add_object('coin',q_brick.x/8,q_brick.y/8-1,8,8)
-      q_brick.added_coin=true
-     end
+    brick.y-=brick.speed_up
+   else
+    brick.apex=true
+    brick.hit=false
+   end
+  end
+
+ elseif brick.apex then
+  if time()-brick.anim>.1 then
+   if brick.y<brick.init_y then
+    if brick.speed_down>brick.speed_low then
+     brick.speed_down*=brick.fast_down
     end
+    brick.y+=brick.speed_down
+   else 
+    brick.finish=true
+    brick.apex=false
    end
   end
  end
@@ -751,20 +736,27 @@ function add_object(obj_name,objx,objy,objw,objh)
   }
   add(sk_small_index,sk_small)
  elseif obj_name=='q_brick' then
+  local newx=objx*8
+  local newy=objy*8
   local q_brick={
    sp=138,
-   x=objx*8,
-   y=objy*8,
+   x=newx,
+   y=newy,
+   init_y=newy,
+   max_y=newy-3,
    w=objw,
    h=objh,
    anim=0,
    hold=0,
-   run=false,
-   fin=false,
-   return_height=objy*8,
-   start_height=0,
-   max_height=6/8,
+   start=true,
    hit=false,
+   apex=false,
+   speed=.5,
+   speed_low=.4
+   speed_up=0,
+   speed_down=0,
+   slow_down=1.1,
+   fast_up=1.2,
    added_coin=false
   }
   add(q_brick_index,q_brick)

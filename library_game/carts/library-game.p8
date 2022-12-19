@@ -41,8 +41,7 @@ function _update60()
  coin_update()
  q_brick_update()
 end
-cy=0
-my=0
+bounce_count=0
 function _draw()
  cls(1)
  rain_draw()
@@ -57,7 +56,7 @@ function _draw()
  add_sk_small()
  p_draw()
  print('score: '..p.score,cam_x,0,10)
- print(success)
+ print(bounce_count)
 end
 -->8
 --player
@@ -438,17 +437,30 @@ function coin_update()
    end
    --update
    coin.anim=time()
-   coin.dy+=gravity
+   coin.dy+=gravity/2
    if coin.dy>0 then
     limit_speed(coin.dy,coin.max_dy)
    end
+   if coin.dy>=0
+   and coin.bounces<3 then
+    coin.bounce=true
+   else
+    coin.bounce=false
+   end
    local newx=coin.x/8
-   local newy=coin.y/8+.5
+   local newy=coin.y/8+1.1
    local newy2=coin.y/8+1
-   if fget(mget(newx,newy+1),0)
-   or fget(mget(newx,newy2),0) then
+
+   if fget(mget(newx,newy),0)
+   and coin.bounces<3
+   and coin.bounce then
+    coin.dy-=coin.boost
+    bounce_count+=1
+    coin.bounces+=1
+    coin.bounce=false
+   elseif fget(mget(newx,newy),0)
+   and coin.bounces>=3 then
     coin.dy=0
-    coin.y-=((coin.y+coin.h+1)%8)-1
    end
    coin.y+=coin.dy
    testy=coin.y
@@ -515,11 +527,9 @@ function q_brick_update()
     p.dy=0
     p.y+=1
    end
-   cy=q_brick.y
-   my=q_brick.max_y
    brick_hit_move(q_brick)
-   if q_brick.finish and not q_brick.added_coin then
-    add_object('coin',q_brick.x/8,q_brick.y/8-1,8,8)
+   if q_brick.hit and not q_brick.added_coin then
+    add_object('coin',q_brick.x/8,q_brick.y/8-2,8,8)
     success=true
     q_brick.added_coin=true
    end
@@ -682,6 +692,8 @@ function add_object(obj_name,objx,objy,objw,objh)
    dy=0,
    max_dx=2,
    max_dy=.001,
+   bounce=true,
+   boost=2,
    falling=false,
    bounces=0,
    landed=false,

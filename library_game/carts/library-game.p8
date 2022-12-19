@@ -41,7 +41,8 @@ function _update60()
  coin_update()
  q_brick_update()
 end
-
+cy=0
+my=0
 function _draw()
  cls(1)
  rain_draw()
@@ -56,6 +57,7 @@ function _draw()
  add_sk_small()
  p_draw()
  print('score: '..p.score,cam_x,0,10)
+ print(success)
 end
 -->8
 --player
@@ -493,27 +495,33 @@ function q_brick_update()
  if #q_brick_index!=0 then
   for q_brick in all(q_brick_index) do
    --animation
-   if not q_brick.run
-   and not q_brick.fin then
+   if q_brick.start then
     q_brick.sp+=.15
     if q_brick.sp>143 then
      q_brick.sp=138
     end
    elseif q_brick.hit
-   and not q_brick.run then
+   and not q_brick.apex then
     q_brick.sp=154
-   elseif q_brick.run 
-   and q_brick.fin then
+   elseif q_brick.finish then
     q_brick.sp=155
    end
    --update
    if object_collide(p.x,p.y+1,p.x+p.w,p.y+1+p.h-2,q_brick.x,(q_brick.y)+8,q_brick.x+q_brick.w,(q_brick.y)+9)
    and (p.jumping or p.dy<0)
-   and not q_brick.fin then
+   and q_brick.start then
     sfx(3)
     q_brick.hit=true
     p.dy=0
     p.y+=1
+   end
+   cy=q_brick.y
+   my=q_brick.max_y
+   brick_hit_move(q_brick)
+   if q_brick.finish and not q_brick.added_coin then
+    add_object('coin',q_brick.x/8,q_brick.y/8-1,8,8)
+    success=true
+    q_brick.added_coin=true
    end
   end
  end
@@ -521,26 +529,23 @@ end
 
 function brick_hit_move(brick)
  if brick.hit then
+  brick.start=false
   if time()-brick.anim>.1 then
    if brick.y>=brick.max_y then
-    if brick.speed_up>brick.speed_low then
-     brick.speed_up/=brick.slow_down
-    end
+    brick.speed_up/=brick.slow_down
     brick.y-=brick.speed_up
    else
     brick.apex=true
     brick.hit=false
    end
   end
-
  elseif brick.apex then
   if time()-brick.anim>.1 then
    if brick.y<brick.init_y then
-    if brick.speed_down>brick.speed_low then
-     brick.speed_down*=brick.fast_down
-    end
+    brick.speed_down*=brick.fast_down
     brick.y+=brick.speed_down
-   else 
+   else
+    brick.y=brick.init_y
     brick.finish=true
     brick.apex=false
    end
@@ -736,14 +741,13 @@ function add_object(obj_name,objx,objy,objw,objh)
   }
   add(sk_small_index,sk_small)
  elseif obj_name=='q_brick' then
-  local newx=objx*8
   local newy=objy*8
   local q_brick={
    sp=138,
-   x=newx,
-   y=newy,
-   init_y=newy,
-   max_y=newy-3,
+   x=objx*8,
+   y=objy*8,
+   init_y=objy*8,
+   max_y=(objy*8)-2,
    w=objw,
    h=objh,
    anim=0,
@@ -751,12 +755,13 @@ function add_object(obj_name,objx,objy,objw,objh)
    start=true,
    hit=false,
    apex=false,
-   speed=.5,
-   speed_low=.4
-   speed_up=0,
-   speed_down=0,
-   slow_down=1.1,
-   fast_up=1.2,
+   finish=false,
+   speed=.8,
+   speed_low=.03,
+   speed_up=.8,
+   speed_down=.03,
+   slow_down=1.01,
+   fast_down=1.7,
    added_coin=false
   }
   add(q_brick_index,q_brick)
@@ -956,7 +961,7 @@ __map__
 80808080808080808091929380a49596979899809192938080808080809080808080b0808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
 80808080808080808091929380a49596979899809192938080808080808080808080b0808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
 80808080808080808091929380a49596979899809192938080808080808080808080b0808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
-80808080808a808a80a1a2a380a4959697989980a1a2a3808a808a808080808080809090909090808080808a80808a808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808a808080a1a2a380a4959697989980a1a2a3808080808080808080808090909090908080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
 80808080808080808080808080a4959697989980808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
 80808080808080808080808080a4959697989980804080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
 80808080808080808080808080b4a5a6a7a8a980808080808080808080808080808080808080808080808080608080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080

@@ -50,10 +50,6 @@ function _init()
  }
 end
 
-function p_lives()
- spr(43,128-11,1,2,2)
-end
-
 function _update60()
  p_update()
  p_animate()
@@ -66,7 +62,7 @@ function _update60()
  coin_update()
  q_brick_update()
 end
-
+timersk=0
 function _draw()
  cls(1)
  rain_draw()
@@ -79,14 +75,25 @@ function _draw()
  p_draw()
  add_sk()
  add_sk_small()
- print('score: '..p.score,cam_x,0,10)
  break_brick()
  if p.hit 
  and p.y>140 then
   rectfill(cam_x+43,60,cam_x+71,66,0)
   print('press p',cam_x+44,61,7)
  end
- p_lives()
+ _ui()
+ print(p.hit,cam_x+1,10,0)
+ print(p.max_dx,cam_x+1,17,0)
+ print(timersk)
+end
+-->8
+--ui
+function _ui()
+ rectfill(0,0,cam_x+127,8,0)
+ for i=1,p.lives do
+  spr(45,cam_x+128-(9*i),0,1,1)
+ end
+ print('score: '..p.score,cam_x+1,2,7)
 end
 
 function break_brick()
@@ -181,7 +188,8 @@ function p_init()
   hit_up=10,
   hit_down=.7,
   hit_tip='',
-  lives=3
+  lives=3,
+  hurt_loop=false
  }
 end
 
@@ -190,7 +198,7 @@ function p_update()
  p.dx*=friction
  --input 
  --move left/right
- if not p.hit then
+ if p.lives>0 then
   if btn(⬅️) then 
    p.dx-=p.acc 
    p.running=true
@@ -239,10 +247,15 @@ function p_update()
   if not btn(4) then
    p.jump_held=false
   end
-  if btn(5) then
+  if btn(5) 
+  and not p.hit then
    p.max_dx=1.75
-  elseif not btn(5) then
+  elseif not btn(5)
+  and not p.hit then
    p.max_dx=1.25
+  elseif p.hit 
+  and p.lives>0 then
+   p.max_dx=8
   end
 
   --collisions
@@ -326,7 +339,8 @@ function p_update()
   elseif p.x>451 then
    p.x=451
   end
- elseif p.hit then
+ elseif p.hit
+ and p.lives<1 then
   if p.hit_hold<25 then
    if time()-p.anim>.03 then
     p.anim=time()
@@ -351,14 +365,6 @@ function p_update()
    end
   end
  end
-end
-
-function hcenter()
- return 64-9*2
-end
-
-function vcenter()
- return 61
 end
 
 function p_animate()
@@ -403,7 +409,8 @@ function p_animate()
    end
   end
  end
- if p.hit then
+ if p.hit
+ and p.lives<1 then
   p.sp=13
  end
 end
@@ -466,9 +473,28 @@ function sk_update()
     end
    elseif object_collide(p.x+3,p.y+1,p.x+3+p.w-6,p.y+1+p.h-1,sk.x+3,sk.y+3,sk.x+3+sk.w-6,sk.y+3+sk.h-3)
    and not object_collide(p.x+2,p.y+p.h,p.x+2+p.w-4,p.y+p.h+1,sk.x+1,sk.y+2,sk.x+1+sk.w-2,sk.y+3) 
-   and not sk.hit then
+   and not sk.hit
+   and p.lives>0 then
     p.hit=true
+    p.hurt_loop=true
+    p.dy=-p.boost
+    if p.x<sk.x then
+     p.dx=-p.boost*2
+    else 
+     p.dx=p.boost*2
+    end
+    p.lives-=1
+   elseif not object_collide(p.x+2,p.y+p.h,p.x+2+p.w-4,p.y+p.h+1,sk.x+1,sk.y+2,sk.x+1+sk.w-2,sk.y+3) 
+   and not sk.hit
+   and p.hit
+   and p.lives>0 then
+    if sk.hit_wait>0 then
+     sk.hit_wait-=1
+    else
+     p.hit=false
+    end
    end
+   timersk=sk.hit_wait
   end
  end
 end
@@ -558,8 +584,26 @@ function sk_small_update()
     end
    elseif object_collide(p.x+3,p.y+1,p.x+3+p.w-6,p.y+1+p.h-1,sk_small.x+2,sk_small.y,sk_small.x+sk_small.w,sk_small.y+2+sk_small.h-4)
    and not object_collide(p.x+2,p.y+p.h,p.x+p.w-2,p.y+p.h+1,sk_small.x,sk_small.y,sk_small.x+sk_small.w-2,sk_small.y+1)
-   and not sk_small.hit then
+   and not sk_small.hit
+   and p.lives>0 then
     p.hit=true
+    p.hurt_loop=true
+    p.dy=-p.boost
+    if p.x<sk_small.x then
+     p.dx=-p.boost*2
+    else
+     p.dx=p.boost*2
+    end
+    p.lives-=1
+   elseif not object_collide(p.x+2,p.y+p.h,p.x+p.w-2,p.y+p.h+1,sk_small.x,sk_small.y,sk_small.x+sk_small.w-2,sk_small.y+1)
+   and not sk_small.hit
+   and p.hit
+   and p.lives>0 then
+    if sk_small.hit_wait>0 then
+     sk_small.hit_wait-=1
+    else
+     p.hit=false
+    end
    end
   end
  end
@@ -922,7 +966,8 @@ function add_object(obj_name,objx,objy,objw,objh)
    landed=true,
    boost=3,
    hit=false,
-   added_coin=false
+   added_coin=false,
+   hit_wait=50
   }
   add(sk_index,sk)
  elseif obj_name=='sk_small' then
@@ -948,7 +993,8 @@ function add_object(obj_name,objx,objy,objw,objh)
    landed=true,
    boost=3,
    hit=false,
-   added_coin=false
+   added_coin=false,
+   hit_wait=50
   }
   add(sk_small_index,sk_small)
  elseif obj_name=='q_brick' then
@@ -1085,14 +1131,14 @@ __gfx__
 00000000222200000000222222220000000222222222000000022222222200000002222222220000000222222222090020902222222200000000222222222222
 00000000222220900902222222222090090222222222209009022222222220900902222222222090090222222222002220022222222090022009022222222222
 00000000222222002002222222222200200222222222220020022222222222002002222222222200200222222222222222222222222200222200222222222222
-00000000222220000002222222222222222222222222222222222222222220000002222222222000000222222200000022222222220000222222222222222222
-00000000222200000000222222222000000222222222200000022222222200000000222222220000000022222000000002222222204444022222222222222222
-00000000222200444440222222220000000022222222000000002222222200444440222222220044444022222044444402222222000440002222222222222222
-00000000222204004400222222220044444022222222004444402222222204004400222222220400440022222000440002222222077007702222222222222222
-00000000222200770077022222220400440022222222040044002222222200770077022222220077007702222077007702222222077000702222222222222222
-00000000222000770007022222220077007702222222007700770222222000770007022222200077000702220077000700222222000440002222222222222222
-00000000222204004400022222200077000702222220007700070222222204004400022222220400440002222000440002222222204444022222222222222222
-00000000222220444440222222220400440002222222040044000222222220444440222222222044444022222204444022222222220000222222222222222222
+00000000222220000002222222222222222222222222222222222222222220000002222222222000000222222200000022222222dddddddd2222222222222222
+00000000222200000000222222222000000222222222200000022222222200000000222222220000000022222000000002222222dd0000dd2222222222222222
+00000000222200444440222222220000000022222222000000002222222200444440222222220044444022222044444402222222d004400d2222222222222222
+00000000222204004400222222220044444022222222004444402222222204004400222222220400440022222000440002222222d070070d2222222222222222
+00000000222200770077022222220400440022222222040044002222222200770077022222220077007702222077007702222222d004400d2222222222222222
+00000000222000770007022222220077007702222222007700770222222000770007022222200077000702220077000700222222d044440d2222222222222222
+00000000222204004400022222200077000702222220007700070222222204004400022222220400440002222000440002222222dd0000dd2222222222222222
+00000000222220444440222222220400440002222222040044000222222220444440222222222044444022222204444022222222dddddddd2222222222222222
 0000000022220d00000022222222204444402222222220444440222222220d000000222222220d00000022222220000222222222222222222222222222222222
 000000002220d0ed0e0d022222220d000000222222220d00000022222220d0ed0e0d02222220d0ed0e0d02222222222222222222222222222222222222222222
 00000000220400dedd0040222220d0ed0e0d02222220d0ed0e0d0222220400dedd004022220400dedd0040222222222222222222222222222222222222222222

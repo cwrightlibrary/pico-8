@@ -76,11 +76,9 @@ function _draw()
  add_sk_small()
  print('score: '..p.score,cam_x,0,10)
  break_brick()
- rectfill(cam_x+43,60,cam_x+71,66,0)
- print('press p',cam_x+44,61,7)
  if p.hit 
  and p.y>140 then
-  rectfill(cam_x+43,60,cam_x+81,64,0)
+  rectfill(cam_x+43,60,cam_x+71,66,0)
   print('press p',cam_x+44,61,7)
  end
 end
@@ -544,13 +542,16 @@ function sk_small_update()
     end
    end
    sk_small.x+=sk_small.dx
-   if object_collide(p.x+2,p.y+p.h,p.x+2+p.w-4,p.y+p.h+1,sk_small.x,sk_small.y,sk_small.x+sk_small.w-2,sk_small.y+1)
+   if object_collide(p.x+2,p.y+p.h,p.x+2+p.w-4,p.y+p.h+1,sk_small.x,sk_small.y,sk_small.x+sk_small.w,sk_small.y+1)
    and not p.jumping
-   and p.falling
-    then
-    if sk_small.hit==false then
+   and p.falling then
+    if not sk_small.hit then
      sk_small.hit=true
     end
+   elseif object_collide(p.x+3,p.y+1,p.x+3+p.w-6,p.y+1+p.h-1,sk_small.x+2,sk_small.y,sk_small.x+sk_small.w,sk_small.y+2+sk_small.h-4)
+   and not object_collide(p.x+2,p.y+p.h,p.x+p.w-2,p.y+p.h+1,sk_small.x,sk_small.y,sk_small.x+sk_small.w-2,sk_small.y+1)
+   and not sk_small.hit then
+    p.hit=true
    end
   end
  end

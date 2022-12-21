@@ -76,6 +76,13 @@ function _draw()
  add_sk_small()
  print('score: '..p.score,cam_x,0,10)
  break_brick()
+ rectfill(cam_x+43,60,cam_x+71,66,0)
+ print('press p',cam_x+44,61,7)
+ if p.hit 
+ and p.y>140 then
+  rectfill(cam_x+43,60,cam_x+81,64,0)
+  print('press p',cam_x+44,61,7)
+ end
 end
 
 function break_brick()
@@ -164,7 +171,12 @@ function p_init()
   jump_hold=0,
   jump_hold_time=0,
   jump_held=false,
-  score=0
+  score=0,
+  hit=false,
+  hit_hold=0,
+  hit_up=10,
+  hit_down=.7,
+  hit_tip=''
  }
 end
 
@@ -173,141 +185,175 @@ function p_update()
  p.dx*=friction
  --input 
  --move left/right
- if btn(⬅️) then 
-  p.dx-=p.acc 
-  p.running=true
-  p.flp=true
- end
- if btn(➡️) then 
-  p.dx+=p.acc 
-  p.running=true
-  p.flp=false
- end
---slide
- if p.running
-  and not btn(⬅️)
-  and not btn(➡️)
-  and not p.falling
-  and not p.jumping then
-  p.running=false
-  p.sliding=true
- end
---jump
- if btn(4)
- and p.landed
- and not p.jump_held then
-  p.jump_held=true
-  sfx(0)
-  p.dy-=p.boost 
-  p.landed=false
- elseif btn(4)
- and p.jumping then
-  if time()-p.jump_hold_time>.05 then
-   p.jump_hold_time=time()
-   if p.jump_hold<3 then
-    p.jump_hold+=1
-    p.dy-=p.higher_boost
+ if not p.hit then
+  if btn(⬅️) then 
+   p.dx-=p.acc 
+   p.running=true
+   p.flp=true
+  end
+  if btn(➡️) then 
+   p.dx+=p.acc 
+   p.running=true
+   p.flp=false
+  end
+ --slide
+  if p.running
+   and not btn(⬅️)
+   and not btn(➡️)
+   and not p.falling
+   and not p.jumping then
+   p.running=false
+   p.sliding=true
+  end
+ --jump
+  if btn(4)
+  and p.landed
+  and not p.jump_held then
+   p.jump_held=true
+   sfx(0)
+   p.dy-=p.boost 
+   p.landed=false
+  elseif btn(4)
+  and p.jumping then
+   if time()-p.jump_hold_time>.05 then
+    p.jump_hold_time=time()
+    if p.jump_hold<3 then
+     p.jump_hold+=1
+     p.dy-=p.higher_boost
+    end
+    if p.jump_hold>3 then
+     p.jumping=false
+     p.falling=true
+    end
    end
-   if p.jump_hold>3 then
-    p.jumping=false
-    p.falling=true
-   end
   end
- end
- if p.landed then
-  p.jump_hold=0
-  p.jump_hold_time=0
- end
- if not btn(4) then
-  p.jump_held=false
- end
- if btn(5) then
-  p.max_dx=1.75
- elseif not btn(5) then
-  p.max_dx=1.25
- end
-
- --collisions
- --down
- if p.dy>0 then
-  p.falling=true
-  p.landed=false
-  p.jumping=false
-
-  p.dy=limit_speed(p.dy,p.max_dy)
-
-  --map collisions
-  if map_collision(p,'down',0)
-  or (map_collision(p,'down',1)
-  and map_collision(p,'down_more',1)) then
-   p.landed=true
-   p.falling=false
-   p.dy=0
-   p.y-=((p.y+p.h+1)%8)-1
+  if p.landed then
+   p.jump_hold=0
+   p.jump_hold_time=0
   end
- --up
- elseif p.dy<0 then
-  p.jumping=true
-  if map_collision(p,'up',0)
-  and not map_collision(p,'up',7) then
-   sfx(3)
-   p.dy=0
+  if not btn(4) then
+   p.jump_held=false
   end
-  if map_collision(p,'up',7) then
-   local clx=ceil(p.x/8)
-   local fly=flr(p.y/8)
-   local flx=flr(p.x/8)
-   local cly=ceil(p.y/8)
+  if btn(5) then
+   p.max_dx=1.75
+  elseif not btn(5) then
+   p.max_dx=1.25
+  end
 
-   if (mget(clx,fly)==144
-   and mget(flx,fly)==144)
-   or (mget(clx,fly)==144
-   and mget(flx,fly)!=144) then
-    broken.ceil_x=true
-    brick_break=true
-    sfx(-1,2)
-    sfx(5,2)
+  --collisions
+  --down
+  if p.dy>0 then
+   p.falling=true
+   p.landed=false
+   p.jumping=false
+
+   p.dy=limit_speed(p.dy,p.max_dy)
+
+   --map collisions
+   if map_collision(p,'down',0)
+   or (map_collision(p,'down',1)
+   and map_collision(p,'down_more',1)) then
+    p.landed=true
+    p.falling=false
     p.dy=0
-   elseif mget(flx,fly)==144
-   and mget(clx,fly)!=144 then
-    broken.flr_x=true
-    brick_break=true
-    sfx(-1,2)
-    sfx(5,2)
+    p.y-=((p.y+p.h+1)%8)-1
+   end
+  --up
+  elseif p.dy<0 then
+   p.jumping=true
+   if map_collision(p,'up',0)
+   and not map_collision(p,'up',7) then
+    sfx(3)
     p.dy=0
    end
+   if map_collision(p,'up',7) then
+    local clx=ceil(p.x/8)
+    local fly=flr(p.y/8)
+    local flx=flr(p.x/8)
+    local cly=ceil(p.y/8)
+
+    if (mget(clx,fly)==144
+    and mget(flx,fly)==144)
+    or (mget(clx,fly)==144
+    and mget(flx,fly)!=144) then
+     broken.ceil_x=true
+     brick_break=true
+     sfx(-1,2)
+     sfx(5,2)
+     p.dy=0
+    elseif mget(flx,fly)==144
+    and mget(clx,fly)!=144 then
+     broken.flr_x=true
+     brick_break=true
+     sfx(-1,2)
+     sfx(5,2)
+     p.dy=0
+    end
+   end
+  end
+  --left
+  if p.dx<0 then
+   p.dx=limit_speed(p.dx,p.max_dx)
+   if map_collision(p,'left',0) then
+    p.dx=0
+   end
+  --right
+  elseif p.dx>0 then 
+   p.dx=limit_speed(p.dx,p.max_dx)
+   if map_collision(p,'right',0) then
+    p.dx=0
+   end
+  end
+  --stop sliding
+  if p.sliding then
+   if abs(p.dx)<.2
+   or p.running then
+    p.dx=0
+    p.sliding=false
+   end
+  end
+  --apply change in loc
+  p.x+=p.dx
+  p.y+=p.dy
+  --limit to map
+  if p.x<0 then
+   p.x=0
+  elseif p.x>451 then
+   p.x=451
+  end
+ elseif p.hit then
+  if p.hit_hold<25 then
+   if time()-p.anim>.03 then
+    p.anim=time()
+    p.hit_up*=.7
+    if p.hit_up>.1 then
+     p.y-=p.hit_up
+    else
+     p.hit_hold+=1
+    end
+   end
+  else
+   if time()-p.anim>.03 then
+    p.anim=time()
+    if p.hit_down<10 then
+     p.hit_down*=1.1
+     if p.y<140 then
+      p.y+=p.hit_down
+     else
+      --game menu code
+     end
+    end
+   end
   end
  end
- --left
- if p.dx<0 then
-  p.dx=limit_speed(p.dx,p.max_dx)
-  if map_collision(p,'left',0) then
-   p.dx=0
-  end
- --right
- elseif p.dx>0 then 
-  p.dx=limit_speed(p.dx,p.max_dx)
-  if map_collision(p,'right',0) then
-   p.dx=0
-  end
- end
- --stop sliding
- if p.sliding then
-  if abs(p.dx)<.2
-  or p.running then
-   p.dx=0
-   p.sliding=false
-  end
- end
- --apply change in loc
- p.x+=p.dx
- p.y+=p.dy
- --limit to map
- if p.x<0 then
-  p.x=0
- elseif p.x>451 then
-  p.x=451
- end
+end
+
+function hcenter()
+ return 64-9*2
+end
+
+function vcenter()
+ return 61
 end
 
 function p_animate()
@@ -351,6 +397,9 @@ function p_animate()
     end
    end
   end
+ end
+ if p.hit then
+  p.sp=13
  end
 end
 
@@ -403,12 +452,17 @@ function sk_update()
     end
    end
    sk.x+=sk.dx
-   if object_collide(p.x+3,p.y+p.h,p.x+3+p.w-6,p.y+p.h+1,sk.x+1,sk.y+2,sk.x+1+sk.w-2,sk.y+3) 
+   if object_collide(p.x+2,p.y+p.h,p.x+2+p.w-4,p.y+p.h+1,sk.x+1,sk.y+2,sk.x+1+sk.w-2,sk.y+3) 
    and not p.jumping 
    and p.falling then
     if sk.hit==false then
+     p.dy=-p.boost
      sk.hit=true
     end
+   elseif object_collide(p.x+3,p.y+1,p.x+3+p.w-6,p.y+1+p.h-1,sk.x+3,sk.y+3,sk.x+3+sk.w-6,sk.y+3+sk.h-3)
+   and not object_collide(p.x+2,p.y+p.h,p.x+2+p.w-4,p.y+p.h+1,sk.x+1,sk.y+2,sk.x+1+sk.w-2,sk.y+3) 
+   and not sk.hit then
+    p.hit=true
    end
   end
  end
@@ -490,7 +544,7 @@ function sk_small_update()
     end
    end
    sk_small.x+=sk_small.dx
-   if object_collide(p.x+3,p.y+p.h,p.x+3+p.w-6,p.y+p.h+1,sk_small.x,sk_small.y,sk_small.x+sk_small.w-2,sk_small.y+1)
+   if object_collide(p.x+2,p.y+p.h,p.x+2+p.w-4,p.y+p.h+1,sk_small.x,sk_small.y,sk_small.x+sk_small.w-2,sk_small.y+1)
    and not p.jumping
    and p.falling
     then
@@ -1005,21 +1059,21 @@ function cam_update()
 end
 __gfx__
 00000000222222222222222222222222222222222222222222222222222222222222222222222222222222222222200000022222222222222222222222222222
-00000000222220000002222222222000000222222222200000022222222220000002222222222000000222222222000000002222222222222222222222222222
-00700700222200000000222222220000000022222222000000002222222200000000222222220000000022222222004444402222222222222222222222222222
-00077000222200444440222222220044444022222222004444402222222200444440222222220400440022222222040044002222222222222222222222222222
-00077000222204004400222222220400440022222222040044002222222204004400222222220077007702222222007700770222222222222222222222222222
-00700700222200770077022222220077007702222222007700770222222200770077022222200077000702222220007700070222222222222222222222222222
-00000000222000770007022222200077000702222220007700070222222000770007022222220400440040222220040044000022222222222222222222222222
-00000000222204004400022222220400440002222222040044000222222204004400022222222044444002222204004444400402222222222222222222222222
-00000000222220444440222222222044444022222222204444402022222220444440402222222044444002222220dd0000000022220000222222222222222222
-0000000022220d000000222222220d000000222222220d000000040222220d000000022222220d0000002222222200ed0e002222220000222222222222222222
-000000002220d0ed0e0d02222220d0ed0e0002222220d0ed0e0d00222220d0ed0e0002222220d0ed0e022222222220dedd022222207447022222222222222222
-00000000222000dedd000222222000dedd004022222000dedd002222222000dedd022222222000dedd0222222222200000002222204444022222222222222222
-00000000222040000004022222204000000202222220400000022222222040000002222222204000000222222222200000002222200000022222222222222222
-00000000222200000000222222220000000222222222000000022222222200000002222222220000000222222222090020902222040de0402222222222222222
-00000000222220900902222222222090090222222222209009022222222220900902222222222090090222222222002220022222209009022222222222222222
-00000000222222002002222222222200200222222222220020022222222222002002222222222200200222222222222222222222200220022222222222222222
+00000000222220000002222222222000000222222222200000022222222220000002222222222000000222222222000000002222222220000002222222222222
+00700700222200000000222222220000000022222222000000002222222200000000222222220000000022222222004444402222222200000000222222222222
+00077000222200444440222222220044444022222222004444402222222200444440222222220400440022222222040044002222222204444440222222222222
+00077000222204004400222222220400440022222222040044002222222204004400222222220077007702222222007700770222222200044000222222222222
+00700700222200770077022222220077007702222222007700770222222200770077022222200077000702222220007700070222222207700770222222222222
+00000000222000770007022222200077000702222220007700070222222000770007022222220400440040222220040044000022220007700070002222222222
+00000000222204004400022222220400440002222222040044000222222204004400022222222044444002222204004444400402204000044000040222222222
+00000000222220444440222222222044444022222222204444402022222220444440402222222044444002222220dd00000000222200d044440d002222222222
+0000000022220d000000222222220d000000222222220d000000040222220d000000022222220d0000002222222200ed0e00222222220d0000d0222222222222
+000000002220d0ed0e0d02222220d0ed0e0002222220d0ed0e0d00222220d0ed0e0002222220d0ed0e022222222220dedd022222222220ed0e02222222222222
+00000000222000dedd000222222000dedd004022222000dedd002222222000dedd022222222000dedd0222222222200000002222222220dedd02222222222222
+00000000222040000004022222204000000202222220400000022222222040000002222222204000000222222222200000002222222220000002222222222222
+00000000222200000000222222220000000222222222000000022222222200000002222222220000000222222222090020902222222200000000222222222222
+00000000222220900902222222222090090222222222209009022222222220900902222222222090090222222222002220022222222090022009022222222222
+00000000222222002002222222222200200222222222220020022222222222002002222222222200200222222222222222222222222200222200222222222222
 00000000222220000002222222222222222222222222222222222222222220000002222222222000000222222222222222222222222222222222222222222222
 00000000222200000000222222222000000222222222200000022222222200000000222222220000000022222222222222222222222222222222222222222222
 00000000222200444440222222220000000022222222000000002222222200444440222222220044444022222222222222222222222222222222222222222222
